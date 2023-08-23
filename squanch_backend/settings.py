@@ -44,16 +44,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sync',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'chrome-extension://dpanmooojgcacojmffiopponhebgcmge'
 ]
 
 ROOT_URLCONF = 'squanch_backend.urls'
@@ -83,8 +89,8 @@ WSGI_APPLICATION = 'squanch_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': 'postgres',
+        'NAME': os.getenv('DB_NAME', 'squanch_db'),
+        'USER': os.getenv('DB_USER', 'squanch_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         "PORT": '5432',
