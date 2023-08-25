@@ -3,10 +3,15 @@ from . import views
 
 app_name = 'sync'
 urlpatterns = [
-    path('', views.getTimestamps, name='listAllTimestamps'),
+    path('', views.index, name='index'),
+    path('newStream', views.createNewStream, name='newStream'),
+    path('commentator/<int:commentator_id>', views.commentatorHome, name='commentator'),
+    path('commentator/<int:commentator_id>/addTs', views.addCommentatorOffset, name='addOffset'),
+    path('listAll', views.getTimestamps, name='listAllTimestamps'),
     path('create', views.addTimestamp, name='addTimestamp'),
-    path('read/<str:pk>', views.getTimestamp, name='getTimestamp'),
-    path('update/<str:pk>', views.updateTimestamp, name='updateTimestamp'),
-    path('delete/<str:pk>', views.deleteTimestamp, name='deleteTimestamp'),
+    path('read/<int:pk>', views.getTimestamp, name='getTimestamp'),
+    path('update/<int:pk>', views.updateTimestamp, name='updateTimestamp'),
+    path('delete/<int:pk>', views.deleteTimestamp, name='deleteTimestamp'),
+    path('mux/webhooks', views.parseMuxWebhooks, name='parseMuxWebhooks')
 ]
 

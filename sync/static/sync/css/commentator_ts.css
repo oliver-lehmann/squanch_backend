@@ -1,0 +1,14 @@
+.streaming-info {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  
+  .stream-label {
+    font-weight: bold;
+  }
+  
+  code {
+    background: #eee;
+    padding: 2px 4px;
+    font-family: monospace;
+  }

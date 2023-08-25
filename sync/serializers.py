@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Synchronization
+from .models import Commentator
 
-class SynchronizationSerializer(serializers.ModelSerializer):
+class CommentatorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Synchronization
+        model = Commentator
         fields = '__all__'
