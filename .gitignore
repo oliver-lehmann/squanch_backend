@@ -9,4 +9,5 @@ db.sqlite3
 media
 
 # Environments
-.env
+*.env
+.vscode
