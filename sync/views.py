@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view
 from .models import Commentator  #, Viewer
 from .serializers import CommentatorSerializer
 from .utils import mm_ss_to_seconds
+from .webhooks import handleStreamStart, handleAssetReady
 
 
 MUX_LS_API_URL = "https://api.mux.com/video/v1/live-streams"
@@ -54,7 +55,7 @@ def createNewStream(request):
     # Save stream key and playback id to database
     if response.json()["data"]:
         new_commentator.stream_key = response.json()["data"]["stream_key"]
-        new_commentator.playback_id = response.json()["data"]["playback_ids"][0]["id"]
+        new_commentator.live_stream_id = response.json()["data"]["id"]
         new_commentator.save()
     
     return render(request, 'sync/commentator_ts.html', { "commentator": new_commentator})
@@ -137,19 +138,12 @@ def deleteTimestamp(request, pk):
     return Response('Item successfully deleted!')
 
 
-def handleStreamStart(data):
-    print("Handling stream start...")
-    # get commentator object with matching stream_key
-    commentator = get_object_or_404(Commentator, stream_key=data["data"]["stream_key"])
-    stream_start = datetime.datetime.fromisoformat(data["created_at"].replace('Z', '+00:00'))
-    commentator.stream_start = stream_start
-    commentator.save()
-    print("Stream start time saved to database.")
-
-
 @api_view(['POST'])
 def parseMuxWebhooks(request):
-    print("request.data: ", request.data)
-    if request.data["type"] == "video.live_stream.active":
+    webhook_type = request.data["type"]
+    if webhook_type == "video.live_stream.connected":
         handleStreamStart(request.data)
+    elif webhook_type == "video.asset.ready":
+        handleAssetReady(request.data)
+        
     return Response("Webhook received.")
