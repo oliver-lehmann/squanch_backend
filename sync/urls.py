@@ -12,6 +12,7 @@ urlpatterns = [
     path('read/<int:pk>', views.getTimestamp, name='getTimestamp'),
     path('update/<int:pk>', views.updateTimestamp, name='updateTimestamp'),
     path('delete/<int:pk>', views.deleteTimestamp, name='deleteTimestamp'),
-    path('mux/webhooks', views.parseMuxWebhooks, name='parseMuxWebhooks')
+    path('listActive/<str:event>', views.getActiveCommentators, name='listActiveCommentators'),
+    path('mux/webhooks', views.parseMuxWebhooks, name='parseMuxWebhooks'),
 ]
 

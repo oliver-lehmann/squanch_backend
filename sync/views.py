@@ -40,8 +40,9 @@ def createNewStream(request):
                 "public"
             ]
         },
-        "use_slate_for_standard_latency": True,
         "audio_only": True,
+        "latency_mode": "low",
+        "reconnect_window": 10,
         "test": True
     }
     headers = { "Content-Type": "application/json" }
@@ -147,3 +148,24 @@ def parseMuxWebhooks(request):
         handleAssetReady(request.data)
         
     return Response("Webhook received.")
+
+
+@api_view(['GET'])
+def getActiveCommentators(request, event):
+    """
+    This is the function that gets called by the chrome extension. 
+    It returns a list of all active commentators for a given event.
+    """
+    # Get all active live streams from Mux
+    response = requests.get(f"{MUX_LS_API_URL}?status=active", 
+                            headers={"Content-Type": "application/json"},
+                            auth=(os.getenv('MUX_TOKEN_ID'), os.getenv('MUX_TOKEN_SECRET')))
+    
+    live_stream_ids = [active_stream["id"] for active_stream in response.json()["data"]]
+    try:
+        commentators = Commentator.objects.filter(live_stream_id__in=live_stream_ids, event_name=event)
+        serializer = CommentatorSerializer(commentators, many=True)
+        return Response(serializer.data)
+    
+    except Commentator.DoesNotExist:
+        return Response("No active commentators found.")
