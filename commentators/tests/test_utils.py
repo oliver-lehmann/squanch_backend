@@ -1,5 +1,5 @@
 import unittest
-from sync.utils import mm_ss_to_seconds
+from commentators.utils import mm_ss_to_seconds
 
 class TestUtils(unittest.TestCase):
     def test_mm_ss_to_seconds(self):

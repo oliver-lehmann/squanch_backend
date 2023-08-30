@@ -21,7 +21,7 @@ done
 
 if [ "$RUN" = true ]; then
     echo "Create migrations"
-    python manage.py makemigrations sync
+    python manage.py makemigrations
     echo "=============================="
 
     echo "Migrate"

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Commentator  #, Viewer
+from .models import Commentator
 from .serializers import CommentatorSerializer
 from .utils import mm_ss_to_seconds
 from .webhooks import handleStreamStart, handleAssetReady
@@ -22,7 +22,7 @@ load_dotenv()
 
 
 def index(request):
-    return render(request, 'sync/index.html')
+    return render(request, 'commentators/index.html')
 
 
 def createNewStream(request):
@@ -59,12 +59,12 @@ def createNewStream(request):
         new_commentator.live_stream_id = response.json()["data"]["id"]
         new_commentator.save()
     
-    return render(request, 'sync/commentator_ts.html', { "commentator": new_commentator})
+    return render(request, 'commentators/commentator_ts.html', { "commentator": new_commentator})
 
 
 def commentatorHome(request, commentator_id):
     commentator = get_object_or_404(Commentator, pk=commentator_id)
-    return render(request, 'sync/commentator_ts.html', {"commentator": commentator})
+    return render(request, 'commentators/commentator_ts.html', {"commentator": commentator})
 
 
 def addCommentatorOffset(request, commentator_id):
@@ -88,7 +88,7 @@ def addCommentatorOffset(request, commentator_id):
     commentator.game_offset = offset
     commentator.save()
     
-    return HttpResponseRedirect(reverse('sync:commentator', args=(commentator_id,)))
+    return HttpResponseRedirect(reverse('commentators:commentator', args=(commentator_id,)))
 
 
 # list all datapoints

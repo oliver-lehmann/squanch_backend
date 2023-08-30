@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = 'sync'
+app_name = 'commentators'
 urlpatterns = [
     path('', views.index, name='index'),
     path('newStream', views.createNewStream, name='newStream'),
