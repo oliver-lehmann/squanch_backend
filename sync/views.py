@@ -42,7 +42,7 @@ def createNewStream(request):
         },
         "audio_only": True,
         "latency_mode": "low",
-        "reconnect_window": 10,
+        "reconnect_window": 30,
         "test": True
     }
     headers = { "Content-Type": "application/json" }
@@ -81,7 +81,7 @@ def addCommentatorOffset(request, commentator_id):
     stream_started = commentator.stream_start
     print("Stream started:", stream_started, type(stream_started))
     
-    offset = (submit_time - stream_started).total_seconds() + commentator_position
+    offset = (submit_time - stream_started).total_seconds() - commentator_position
     print("Offset (s):", offset)
     
     # update commentator object
@@ -157,7 +157,7 @@ def getActiveCommentators(request, event):
     It returns a list of all active commentators for a given event.
     """
     # Get all active live streams from Mux
-    response = requests.get(f"{MUX_LS_API_URL}?status=active", 
+    response = requests.get(f"{MUX_LS_API_URL}", 
                             headers={"Content-Type": "application/json"},
                             auth=(os.getenv('MUX_TOKEN_ID'), os.getenv('MUX_TOKEN_SECRET')))
     
