@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-_hskv7wjq7wro%xkgkfpyrq90&uifj^xw6r__c5iul=bga2%o8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.53.205.183', 'localhost']
+ALLOWED_HOSTS = ['13.53.205.183', 'smashing-chamois-centrally.ngrok-free.app', 'localhost']
 
 
 # Application definition
@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sync',
+    'commentators',
+    'games',
+    'users',
     'rest_framework',
     'corsheaders',
 ]
