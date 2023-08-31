@@ -1,8 +1,10 @@
 from django.db import models
+from games.models import Game
+from users.models import User
 
 class Commentator(models.Model):
-    commentator_name = models.CharField(max_length=200)
-    event_name = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, blank=True, null=True)
     live_stream_id = models.CharField(max_length=200, blank=True)
     stream_start = models.DateTimeField(blank=True, null=True)
     stream_key = models.CharField(max_length=200, blank=True)
@@ -11,5 +13,11 @@ class Commentator(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.commentator_name
+        return self.user.username + ": " + self.game.name
+    
+    def get_commentator_name(self):
+        return self.user.username
+    
+    def get_game_name(self):
+        return self.game.name
     

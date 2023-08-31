@@ -45,11 +45,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to Squanch</h1>
-        <p>Choose the commentator and the game you want to commentate:</p>
+        <h1>Welcome to Squanch, {{ commentator.user.surname }}</h1>
+        <p>Start a new stream by entering your details below:</p>
         <form action="{% url 'commentators:newStream' %}" method="post">
             {% csrf_token %}
-            {{ form }}
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="game">Game:</label>
+            <input type="text" id="game" name="game" required>
             <input type="submit" value="Start Stream">
         </form>
     </div>

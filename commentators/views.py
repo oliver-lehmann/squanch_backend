@@ -9,10 +9,13 @@ from dotenv import load_dotenv
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+from .forms import NewComentatorForm
 from .models import Commentator
 from .serializers import CommentatorSerializer
 from .utils import mm_ss_to_seconds
 from .webhooks import handleStreamStart, handleAssetReady
+from games.models import Game
+from users.models import User
 
 
 MUX_LS_API_URL = "https://api.mux.com/video/v1/live-streams"
@@ -22,13 +25,25 @@ load_dotenv()
 
 
 def index(request):
-    return render(request, 'commentators/index.html')
+    form = NewComentatorForm()
+    context = {"form": form}
+    return render(request, 'commentators/index.html', context)
+
+
+def commentatorHome(request, commentator_id):
+    commentator = get_object_or_404(Commentator, pk=commentator_id)
+    context = {"commentator": commentator}
+    # TODO: let the commentator choose another game
+    return render(request, 'commentators/commentator_ts.html', context)
 
 
 def createNewStream(request):
-    name = request.POST["name"]
-    game = request.POST["game"]
-    new_commentator = Commentator.objects.create(commentator_name=name, event_name=game)
+    user = User.objects.get(pk=request.POST["name"])
+    game = Game.objects.get(pk=request.POST["game"])
+    print("Name:", user.surname, "Game:", game.name)
+    
+    # Create new commentator object
+    new_commentator = Commentator.objects.create(user=user, game=game)
     
     # Create new live stream on Mux
     data = {
@@ -59,12 +74,8 @@ def createNewStream(request):
         new_commentator.live_stream_id = response.json()["data"]["id"]
         new_commentator.save()
     
-    return render(request, 'commentators/commentator_ts.html', { "commentator": new_commentator})
-
-
-def commentatorHome(request, commentator_id):
-    commentator = get_object_or_404(Commentator, pk=commentator_id)
-    return render(request, 'commentators/commentator_ts.html', {"commentator": commentator})
+    context = { "commentator": new_commentator }
+    return render(request, 'commentators/commentator_ts.html', context)
 
 
 def addCommentatorOffset(request, commentator_id):
@@ -88,7 +99,7 @@ def addCommentatorOffset(request, commentator_id):
     commentator.game_offset = offset
     commentator.save()
     
-    return HttpResponseRedirect(reverse('commentators:commentator', args=(commentator_id,)))
+    return HttpResponseRedirect(reverse('commentators:commentator', args=(commentator.id,)))
 
 
 # list all datapoints
@@ -157,15 +168,23 @@ def getActiveCommentators(request, event):
     It returns a list of all active commentators for a given event.
     """
     # Get all active live streams from Mux
-    response = requests.get(f"{MUX_LS_API_URL}", 
+    response = requests.get(f"{MUX_LS_API_URL}?status=active", 
                             headers={"Content-Type": "application/json"},
                             auth=(os.getenv('MUX_TOKEN_ID'), os.getenv('MUX_TOKEN_SECRET')))
-    
-    live_stream_ids = [active_stream["id"] for active_stream in response.json()["data"]]
-    try:
-        commentators = Commentator.objects.filter(live_stream_id__in=live_stream_ids, event_name=event)
-        serializer = CommentatorSerializer(commentators, many=True)
-        return Response(serializer.data)
-    
-    except Commentator.DoesNotExist:
-        return Response("No active commentators found.")
+    if len(response.json()["data"]) > 0:
+        live_stream_ids = [active_stream["id"] for active_stream in response.json()["data"]]
+        try:
+            commentators = Commentator.objects.filter(live_stream_id__in=live_stream_ids, game__name=event)
+            serializer = CommentatorSerializer(commentators, many=True)
+            
+            # Add game start timestamp to serializer
+            gamestart_ts = commentators[0].game.start_timestamp
+            for commentator in serializer.data:
+                commentator["game_start_ts"] = gamestart_ts
+                    
+            return Response(serializer.data)
+        
+        except Commentator.DoesNotExist:
+            return Response("No active commentators found.", status=404)
+    else:
+        return Response([])
