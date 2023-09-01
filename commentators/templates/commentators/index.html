@@ -1,57 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Squanch - Start a Stream</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"/>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-        }
-        input[type="submit"] {
-            background: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
+      body {
+        font-family: "Avenir", sans-serif;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Squanch</h1>
-        <p>Choose the commentator and the game you want to commentate:</p>
-        <form action="{% url 'commentators:newStream' %}" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Start Stream">
-        </form>
+  </head>
+
+  <body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-8">
+      <h1 class="text-4xl font-semibold mb-4">Start a Stream</h1>
+      <p class="text-lg mb-8">
+        Choose the commentator and the game you want to commentate:
+      </p>
+      <form
+        action="{% url 'commentators:newStream' %}"
+        method="post"
+        class="bg-white p-4 rounded shadow"
+      >
+        {% csrf_token %}
+        <div class="mb-4">
+          {{ form.name.label_tag }}<br>
+          {{ form.name }}
+        </div>
+        <div class="mb-4">
+          {{ form.game.label_tag }}<br>
+          {{ form.game }}
+        </div>
+        <input type="submit" value="Start Stream" class="bg-blue-500 text-white rounded px-4 py-2 cursor-pointer mt-4"/>
+      </form>
     </div>
-</body>
+  </body>
 </html>

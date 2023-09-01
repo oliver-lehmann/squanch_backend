@@ -1,41 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Synchronize Time</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'commentators/css/commentator_ts.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"/>
     <script>
-        function addSubmitTime() {
-            var form = document.getElementById('timeForm');
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'submit_time';
-            input.value = new Date().toISOString();
-            form.appendChild(input);
-        }
+      function addSubmitTime() {
+        var form = document.getElementById("timeForm");
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "submit_time";
+        input.value = new Date().toISOString();
+        form.appendChild(input);
+      }
     </script>
-</head>
-<body>
-    {% if commentator.stream_key %}
-        <div class="streaming-info">
-            <div class="stream-label">Stream Key:</div>
-            <code>{{ commentator.stream_key }}</code>
-        
-            <div class="stream-label">Stream Server:</div>  
-            <code>rtmps://global-live.mux.com:443/app</code>
+    <style>
+      body {
+        font-family: "Avenir", sans-serif;
+      }
+      .container {
+        max-width: 1200px;
+        margin: auto;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-8">
+      <h1 class="text-4xl font-semibold mb-4">Stream Setup & Time Synchronization</h1>
+
+      <!-- Stream Setup Section -->
+      <section class="bg-white p-4 rounded shadow mb-8">
+        <h2 class="text-2xl font-medium mb-4">General Information</h2>
+        <div class="mb-2">
+          <p class="text-md font-medium">Commentator:</p>
+          <p> {{ commentator.user.surname }} {{ commentator.user.lastname }}</p>
         </div>
-    {% endif %}
-    <h1>Synchronize {{ commentator.user.surname }}'s Commentary</h1>
-    <h4>Commentator: {{ commentator.user.surname }} {{ commentator.user.lastname }}</h4>
-    <h4>Game: {{ commentator.game.name }}</h4>
-    <form action="{% url 'commentators:addOffset' commentator.id %}" method="post", id="timeForm" onsubmit="addSubmitTime()">
-        {% csrf_token %}
-        <label for="time">Time (mm:ss):</label>
-        <input type="text" id="time" name="time" value="00:00" pattern="([0-9]?[0-9]|1[01][0-9]):([0-5]?[0-9])" required>
-        <br>
-        <input type="submit" value="Synchronize">
-    </form>
-</body>
+        <div class="mb-6">
+            <p class="text-md font-medium">Game:</p>
+            <p>{{ commentator.game.name }}</p>
+        </div>
+
+        <h2 class="text-2xl font-medium mb-4">Stream Setup</h2>
+        <p class="mb-4">
+          Follow these steps to set up your live stream in OBS (Open Broadcaster Software):
+        </p>
+        <ol class="list-decimal list-inside mb-4">
+          <li>Open OBS and go to Settings > Stream.</li>
+          <li>
+            Select the service as "Custom" and input the following URL:
+            <strong>rtmps://global-live.mux.com:443/app</strong>
+          </li>
+          <li>
+            Input the Stream Key: <strong>{{ commentator.stream_key }}</strong>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Time Synchronization Section -->
+      <section class="bg-white p-4 rounded shadow">
+        <h2 class="text-2xl font-medium mb-4">Time Synchronization</h2>
+        <p>
+          To synchronize your stream, please input the current time of the game
+          you are watching.
+        </p>
+        <p class="mb-4">
+            The time should be in the format of <code>mm:ss</code>.
+        </p>
+        <form
+          action="{% url 'commentators:addOffset' commentator.id %}"
+          method="post"
+          id="timeForm"
+          onsubmit="addSubmitTime()"
+          class="flex flex-col max-w-max"
+        >
+          {% csrf_token %}
+          <label for="time" class="block text-sm font-medium mb-2"
+            >Enter the game time:</label
+          >
+          <input
+            id="time"
+            name="time"
+            type="text"
+            value="00:00"
+            class="border rounded py-2 px-4 mb-4"
+            pattern="([0-9]?[0-9]|1[01][0-9]):([0-5]?[0-9])"
+            required
+          />
+          <input
+            type="submit"
+            value="Synchronize"
+            class="bg-blue-500 text-white rounded px-4 py-2 cursor-pointer"
+          />
+        </form>
+      </section>
+    </div>
+  </body>
 </html>
